@@ -2,11 +2,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class MuscleSelection:
-
     selected: set[str] = field(default_factory=set)
 
     def toggle(self, muscle: str):
-
         if muscle in self.selected:
             self.selected.remove(muscle)
         else:

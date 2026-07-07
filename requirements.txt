@@ -1,2 +1,3 @@
 pandas
 nicegui
+pandas-stubs

@@ -1,3 +1,4 @@
 pandas
 nicegui
 pandas-stubs
+PuLP

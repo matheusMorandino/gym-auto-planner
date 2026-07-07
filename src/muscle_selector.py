@@ -1,6 +1,6 @@
 from nicegui import ui
 
-from consts.ui_models import MuscleSelection
+from models.ui_models import MuscleSelection
 from consts.mapping import SVG_TO_MUSCLES
 from src.svg_loader import load_svg
 

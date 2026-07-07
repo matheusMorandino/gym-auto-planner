@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import List
+from typing import List, Dict
 
 import src.utils as utils
 from src.models.data_models import Exercise, Muscle
@@ -9,9 +9,9 @@ from src.models.data_models import Exercise, Muscle
 ROOT_DIR = os.path.dirname(os.path.dirname(os.getcwd()))
 
 
-def __build_training_list(df_raw: pd.DataFrame) -> List[Exercise]:
+def __build_training_list(df_raw: pd.DataFrame) -> Dict[str, Exercise]:
     """
-    Returns a list of Exercise objects
+    Returns a Dict of Exercise objects
     :param df_raw:
     :return:
     """

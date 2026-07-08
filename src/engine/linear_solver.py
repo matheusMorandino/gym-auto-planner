@@ -10,6 +10,9 @@ class LinearSolver:
     def __init__(self, scenario_params: ScenarioParameters):
         self.scenario_params = scenario_params
 
+        self.valid_equip_names = [equip.name for equip in self.scenario_params.valid_equipments]
+        self.valid_exercises = [
+            exercise for _, exercise in EXERCISE_DICT.items() if exercise.equipment in self.valid_equip_names]
         self.strain_matrix = self._build_strain_matrix()
 
         self.problem = None
@@ -19,13 +22,9 @@ class LinearSolver:
         Builds matrix-like dictionary representing the strain a given exercise will apply to a given muscle
         :return:
         """
-        valid_equip_names = [equip.name for equip in self.scenario_params.valid_equipments]
-        valid_exercises = [
-            exercise for _, exercise in EXERCISE_DICT.items() if exercise.equipment in valid_equip_names]
-
         strain_matrix = {}
         for muscle in self.scenario_params.muscles_list:
-            for exercise in valid_exercises:
+            for exercise in self.valid_exercises:
                 if muscle.name in exercise.primary_muscles:
                     strain = 2
                 elif muscle.name in exercise.secondary_muscles:
@@ -39,10 +38,15 @@ class LinearSolver:
 
     def _create_variables(self):
         """
-        Creates variables needed for linear solver
+        Creates variables needed for the linear solver
         :return:
         """
-        pass
+        # Create variables for the usage of a given valid exercise from the scenario parameters
+        self.var_exercise: Dict[str, LpVariable] = {
+            exercise.name: LpVariable(f'{exercise.name}_usage', lowBound=0, cat='Integer')
+            for exercise
+            in self.valid_exercises
+        }
 
     def solve(self):
         # Defining problem

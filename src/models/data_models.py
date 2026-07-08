@@ -9,6 +9,12 @@ class Muscle:
 
 
 @dataclass
+class MuscleGroup:
+    name: str = field(default='')
+    components: List[Muscle] = field(default_factory=list)
+
+
+@dataclass
 class Equipment:
     name: str = field(default='')
 
@@ -24,6 +30,10 @@ class Exercise:
 @dataclass
 class ScenarioParameters:
     overtraining_delta: int = field(default=0)
-    training_list: List[Muscle] = field(default_factory=list)
-    valid_trainings: List[Equipment] = field(default_factory=list)
+    muscles_list: List[Muscle] = field(default_factory=list)
+    valid_equipments: List[Equipment] = field(default_factory=list)
 
+
+@dataclass
+class TrainingSolution:
+    pass

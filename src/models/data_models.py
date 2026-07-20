@@ -25,6 +25,10 @@ class Exercise:
     equipment: Equipment = field(default_factory=Equipment)
     primary_muscles: List[Muscle] = field(default_factory=list)
     secondary_muscles: List[Muscle] = field(default_factory=list)
+    synergistic_muscles: List[Muscle] = field(default_factory=list)
+    stabilizing_muscles: List[Muscle] = field(default_factory=list)
+    antagonist_muscles: List[Muscle] = field(default_factory=list)
+    dynamic_muscles: List[Muscle] = field(default_factory=list)
 
 
 @dataclass

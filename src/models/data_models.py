@@ -8,7 +8,7 @@ class Muscle:
 
 
 @dataclass
-class MuscleGroup():
+class MuscleGroup:
     name: str = field(default='')
     components: List[Muscle] = field(default_factory=list)
 
@@ -24,7 +24,7 @@ class Exercise:
     name: str = field(default='')
     equipment: Equipment = field(default_factory=Equipment)
 
-    # Muscle groupings
+    # strain groups
     primary_muscles: List[Muscle] = field(default_factory=list)
     secondary_muscles: List[Muscle] = field(default_factory=list)
     synergistic_muscles: List[Muscle] = field(default_factory=list)
@@ -38,10 +38,17 @@ class Exercise:
 
 @dataclass
 class ScenarioParameters:
-    overtraining_delta: int = field(default=0)
+    training_target: int = field(default=0)
     muscles_list: List[Muscle] = field(default_factory=list)
     valid_equipments: List[Equipment] = field(default_factory=list)
 
+    # strain groups scores
+    primary_score: float = field(default=1)
+    secondary_score: float = field(default=0.8)
+    synergistic_score: float = field(default=0.5)
+    stabilizing_score: float = field(default=0.2)
+    antagonist_score: float = field(default=0.1)
+    dynamic_score: float = field(default=0.2)
 
 @dataclass
 class TrainingSolution:

@@ -8,16 +8,16 @@ from src.models.data_models import Equipment, Muscle, MuscleGroup, ScenarioParam
 class ScenarioHandler:
     def __init__(
         self,
-        overtraining_delta: int,
+        training_target: int,
         group_list: List[MuscleGroup],
         valid_equipments: List[Equipment] = EQUIPMENT_DICT.values()
     ):
-        self.overtraining_delta = overtraining_delta
+        self.training_target = training_target
         self.group_list = group_list
         self.valid_equipments = valid_equipments
 
         self.scenario_params = ScenarioParameters(
-            overtraining_delta=overtraining_delta,
+            training_target=training_target,
             valid_equipments=valid_equipments,
             muscles_list=self._build_muscles_list(self.group_list)
         )
@@ -44,7 +44,7 @@ class ScenarioHandler:
 
 if __name__ == '__main__':
     ScenarioHandler(
-        overtraining_delta=2,
+        training_target=2,
         group_list=[
             MUSCLE_GROUPS['biceps'],
             MUSCLE_GROUPS['forearms'],

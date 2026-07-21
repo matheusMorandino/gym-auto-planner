@@ -3,7 +3,7 @@ from typing import List, Dict, Literal, Tuple
 from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpAffineExpression, LpStatus
 
 from models.data_models import ScenarioParameters
-from src.consts.mapping import EXERCISE_DICT
+from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
 
 
 class LinearSolver:
@@ -22,17 +22,27 @@ class LinearSolver:
         Builds matrix-like dictionary representing the strain a given exercise will apply to a given muscle
         :return:
         """
-        strain_matrix = {}
-        for muscle in self.scenario_params.muscles_list:
+        strain_matrix = pd.DataFrame(index=[muscle.name for muscle in self.scenario_params.muscles_list],
+                                     columns=[exercise.name for exercise in self.valid_exercises])
+
+        for muscle in MUSCLES_DICT.values():
             for exercise in self.valid_exercises:
                 if muscle.name in exercise.primary_muscles:
-                    strain = 2
+                    strain = self.scenario_params.primary_score
                 elif muscle.name in exercise.secondary_muscles:
-                    strain = 1
+                    strain = self.scenario_params.secondary_score
+                elif muscle.name in exercise.synergistic_muscles:
+                    strain = self.scenario_params.synergistic_score
+                elif muscle.name in exercise.stabilizing_muscles:
+                    strain = self.scenario_params.stabilizing_score
+                elif muscle.name in exercise.antagonist_muscles:
+                    strain = self.scenario_params.antagonist_score
+                elif muscle.name in exercise.dynamic_muscles:
+                    strain = self.scenario_params.dynamic_score
                 else:
                     strain = 0
 
-                strain_matrix[(muscle.name, exercise.name)] = strain
+                strain_matrix.at[muscle.name, exercise.name] = strain
 
         return strain_matrix
 

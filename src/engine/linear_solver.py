@@ -19,7 +19,7 @@ class LinearSolver:
 
     def _build_strain_matrix(self) -> pd.DataFrame:
         """
-        Builds matrix-like dictionary representing the strain a given exercise will apply to a given muscle
+        Builds dataframe representing the strain a given exercise will apply to a given muscle
         :return:
         """
         strain_matrix = pd.DataFrame(index=[muscle.name for muscle in self.scenario_params.muscles_list],

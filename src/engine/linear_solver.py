@@ -17,7 +17,7 @@ class LinearSolver:
 
         self.problem = None
 
-    def _build_strain_matrix(self) -> Dict[Tuple[str, str], int]:
+    def _build_strain_matrix(self) -> pd.DataFrame:
         """
         Builds matrix-like dictionary representing the strain a given exercise will apply to a given muscle
         :return:

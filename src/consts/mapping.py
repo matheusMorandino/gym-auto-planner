@@ -120,7 +120,7 @@ def __build_training_list(df_raw: pd.DataFrame) -> Dict[Tuple[str, str], Exercis
         axis=1
     )
 
-    return {(row['name'], row['equipment']): Exercise(**row) for _, row in df_raw.iterrows()}
+    return {row['name']: Exercise(**row) for _, row in df_raw.iterrows()}
 
 
 def __get_all_equipments(df_raw: pd.DataFrame) -> Dict[str, Equipment]:

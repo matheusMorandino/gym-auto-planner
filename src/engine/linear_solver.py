@@ -22,27 +22,27 @@ class LinearSolver:
         Builds dataframe representing the strain a given exercise will apply to a given muscle
         :return:
         """
-        strain_matrix = pd.DataFrame(index=[muscle.name for muscle in self.scenario_params.muscles_list],
+        strain_matrix = pd.DataFrame(index=[muscle.name for muscle in MUSCLES_DICT.values()],
                                      columns=[exercise.name for exercise in self.valid_exercises])
 
-        for muscle in MUSCLES_DICT.values():
-            for exercise in self.valid_exercises:
-                if muscle.name in exercise.primary_muscles:
+        for muscle in strain_matrix.index:
+            for exercise in strain_matrix.columns:
+                if muscle in EXERCISE_DICT[exercise].primary_muscles:
                     strain = self.scenario_params.primary_score
-                elif muscle.name in exercise.secondary_muscles:
+                elif muscle in EXERCISE_DICT[exercise].secondary_muscles:
                     strain = self.scenario_params.secondary_score
-                elif muscle.name in exercise.synergistic_muscles:
+                elif muscle in EXERCISE_DICT[exercise].synergistic_muscles:
                     strain = self.scenario_params.synergistic_score
-                elif muscle.name in exercise.stabilizing_muscles:
+                elif muscle in EXERCISE_DICT[exercise].stabilizing_muscles:
                     strain = self.scenario_params.stabilizing_score
-                elif muscle.name in exercise.antagonist_muscles:
+                elif muscle in EXERCISE_DICT[exercise].antagonist_muscles:
                     strain = self.scenario_params.antagonist_score
-                elif muscle.name in exercise.dynamic_muscles:
+                elif muscle in EXERCISE_DICT[exercise].dynamic_muscles:
                     strain = self.scenario_params.dynamic_score
                 else:
                     strain = 0
 
-                strain_matrix.at[muscle.name, exercise.name] = strain
+                strain_matrix.at[muscle, exercise] = strain
 
         return strain_matrix
 
@@ -53,13 +53,61 @@ class LinearSolver:
         """
         # Create variables for the usage of a given valid exercise from the scenario parameters
         self.var_exercise: Dict[str, LpVariable] = {
-            exercise.name: LpVariable(f'{exercise.name}_usage', lowBound=0, cat='Integer')
+            exercise.name: LpVariable(f'{exercise.name}_usage', lowBound=0, upBound=1, cat='Binary')
             for exercise
             in self.valid_exercises
         }
+
+    def _create_restictions(self):
+        """
+        Creates all the required restrictions for the linear solver. The logic follows the following targets:
+
+        1. Each targeted muscle in the scenario must have it's total strain >= training_target
+
+        :return:
+        """
+        for muscle in self.scenario_params.targeted_muscles:
+            total_strain = lpSum(
+                self.strain_matrix.at[muscle.name, exercise] * self.var_exercise[exercise]
+                for exercise in self.strain_matrix.columns
+            )
+
+            self.problem += (total_strain >= self.scenario_params.training_target,
+                             f'{muscle.name}_strain_restriction')
+
+    def _create_objective_function(self):
+        """
+        Creates the objective function for the linear solver. The logic follows the following targets:
+
+        * obj: Minimal objective function
+        * formulation:
+            total_strain_weight * sum(strain_matrix[muscle][exercise] * var_exercise[exercise])
+        """
+        total_strain_comp = (
+            self.scenario_params.total_strain_weight * lpSum(
+                self.strain_matrix.at[muscle, exercise] * self.var_exercise[exercise]
+                for muscle in self.strain_matrix.index
+                for exercise in self.strain_matrix.columns
+            )
+        )
+
+        total_obj_function = total_strain_comp
+
+        self.problem += total_obj_function
 
     def solve(self):
         # Defining problem
         self.problem = LpProblem("Training_Optimization", LpMinimize)
 
         self._create_variables()
+        self._create_restictions()
+        self._create_objective_function()
+
+        # Solve the problem
+        self.problem.solve()
+
+        # print solution
+        for exercise in self.valid_exercises:
+            usage = self.var_exercise[exercise.name].varValue
+            if isinstance(usage, float) and usage > 0:
+                print(f'{exercise.name} -> {usage}')

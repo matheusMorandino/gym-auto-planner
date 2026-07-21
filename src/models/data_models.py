@@ -39,7 +39,7 @@ class Exercise:
 @dataclass
 class ScenarioParameters:
     training_target: int = field(default=0)
-    muscles_list: List[Muscle] = field(default_factory=list)
+    targeted_muscles: List[Muscle] = field(default_factory=list)
     valid_equipments: List[Equipment] = field(default_factory=list)
 
     # strain groups scores
@@ -49,6 +49,10 @@ class ScenarioParameters:
     stabilizing_score: float = field(default=0.2)
     antagonist_score: float = field(default=0.1)
     dynamic_score: float = field(default=0.2)
+
+    # optimization target weights
+    total_strain_weight: float = field(default=1)
+
 
 @dataclass
 class TrainingSolution:

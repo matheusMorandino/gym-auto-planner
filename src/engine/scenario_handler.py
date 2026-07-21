@@ -10,7 +10,7 @@ class ScenarioHandler:
         self,
         training_target: int,
         group_list: List[MuscleGroup],
-        valid_equipments: List[Equipment] = EQUIPMENT_DICT.values()
+        valid_equipments: List[Equipment] = list(EQUIPMENT_DICT.values())
     ):
         self.training_target = training_target
         self.group_list = group_list
@@ -19,7 +19,7 @@ class ScenarioHandler:
         self.scenario_params = ScenarioParameters(
             training_target=training_target,
             valid_equipments=valid_equipments,
-            muscles_list=self._build_muscles_list(self.group_list)
+            targeted_muscles=self._build_muscles_list(self.group_list)
         )
 
     def _build_muscles_list(self, group_list: List[MuscleGroup]) -> List[Muscle]:
@@ -44,15 +44,15 @@ class ScenarioHandler:
 
 if __name__ == '__main__':
     ScenarioHandler(
-        training_target=2,
+        training_target=1,
         group_list=[
             MUSCLE_GROUPS['biceps'],
             MUSCLE_GROUPS['forearms'],
             MUSCLE_GROUPS['triceps'],
         ],
-        valid_equipments=[
-            EQUIPMENT_DICT['Barbell'],
-            EQUIPMENT_DICT['Dumbbell'],
-            EQUIPMENT_DICT['Body Weight'],
-        ]
+        # valid_equipments=[
+        #     EQUIPMENT_DICT['Barbell'],
+        #     EQUIPMENT_DICT['Dumbbell'],
+        #     EQUIPMENT_DICT['Body Weight'],
+        # ]
     ).get_training_plans()

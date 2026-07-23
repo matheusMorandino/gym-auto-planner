@@ -49,6 +49,7 @@ if __name__ == '__main__':
             MUSCLE_GROUPS['biceps'],
             MUSCLE_GROUPS['forearms'],
             MUSCLE_GROUPS['triceps'],
+            MUSCLE_GROUPS['upper_abs'],
         ],
         # valid_equipments=[
         #     EQUIPMENT_DICT['Barbell'],

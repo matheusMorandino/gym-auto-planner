@@ -7,6 +7,10 @@
         "Brachioradialis",
         "Pronators",
         "Supinator",
+        "Flexor Carpi Radialis",
+        "Flexor Carpi Ulnaris",
+        "Extensor Carpi Radialis",
+        "Extensor Carpi Ulnaris",
         "Wrist Flexors",
         "Wrist Extensors"
     ],
@@ -14,7 +18,10 @@
         "Triceps Brachii"
     ],
     "upper_pecs": [
-        "Pectoralis Major Clavicular"
+        "Pectoralis Major Clavicular",
+        "Pectoralis Minor",
+        "Serratus Anterior",
+        "Inferior Digitations"
     ],
     "middle_pecs": [
         "Pectoralis Major Sternal"
@@ -23,13 +30,18 @@
         "Pectoralis Major Sternal"
     ],
     "front_delts": [
-        "Anterior Deltoid"
+        "Anterior Deltoid",
+        "Coracobrachialis"
     ],
     "side_delts": [
-        "Lateral Deltoid"
+        "Lateral Deltoid",
+        "Supraspinatus"
     ],
     "rear_delts": [
-        "Posterior Deltoid"
+        "Posterior Deltoid",
+        "Infraspinatus",
+        "Teres Minor",
+        "Subscapularis"
     ],
     "upper_abs": [
         "Rectus Abdominis"
@@ -41,24 +53,40 @@
         "Obliques"
     ],
     "quads": [
-        "Quadriceps"
+        "Quadriceps",
+        "Rectus Femoris",
+        "Hip Flexors"
     ],
     "hamstrings": [
-        "Hamstrings"
+        "Hamstrings",
+        "Popliteus"
     ],
     "calves": [
         "Gastrocnemius",
-        "Soleus"
+        "Soleus",
+        "Tibialis Anterior"
     ],
     "glutes": [
-        "Gluteus Maximus"
+        "Gluteus Maximus",
+        "Gluteus Medius",
+        "Gluteus Minimus",
+        "Piriformis",
+        "Obturator externus"
     ],
     "hip_abductor": [
-        "Hip Abductors"
+        "Gluteus Medius",
+        "Gluteus Minimus",
+        "Tensor Fasciae Latae"
     ],
     "hip_adductor": [
-        "Hip Adductors",
-        "Adductors"
+        "Adductor Brevis",
+        "Adductor Longus",
+        "Adductor Magnus",
+        "Gracilis",
+        "Pectineus",
+        "Iliopsoas",
+        "Psoas major",
+        "Sartorius"
     ],
     "lats": [
         "Latissimus Dorsi",
@@ -69,7 +97,9 @@
     ],
     "lower_back": [
         "Erector Spinae",
-        "Quadratus Lumborum"
+        "Quadratus Lumborum",
+        "Iliocastalis lumborum",
+        "Iliocastalis thoracis"
     ],
     "upper_traps": [
         "Upper Trapezius"
@@ -81,6 +111,10 @@
     "neck": [
         "Splenius",
         "Sternocleidomastoid",
-        "Levator Scapulae"
+        "Levator Scapulae",
+        "Cervicis and Capitis Fibers",
+        "Longus capitis",
+        "Longus colli",
+        "Rectus capitus"
     ]
 }

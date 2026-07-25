@@ -51,16 +51,22 @@ class ScenarioHandler:
 
 if __name__ == '__main__':
     ScenarioHandler(
-        training_target=1,
+        training_target=2,
         overtraining_delta=2,
         group_list=[
             MUSCLE_GROUPS['biceps'],
             MUSCLE_GROUPS['forearms'],
             MUSCLE_GROUPS['triceps'],
+            MUSCLE_GROUPS['front_delts'],
+            MUSCLE_GROUPS['side_delts'],
+            MUSCLE_GROUPS['rear_delts'],
+            MUSCLE_GROUPS['upper_pecs'],
+            MUSCLE_GROUPS['lower_pecs'],
+            MUSCLE_GROUPS['middle_pecs'],
         ],
-        # valid_equipments=[
-        #     EQUIPMENT_DICT['Barbell'],
-        #     EQUIPMENT_DICT['Dumbbell'],
-        #     EQUIPMENT_DICT['Body Weight'],
-        # ]
+        valid_equipments=[
+            EQUIPMENT_DICT['Barbell'],
+            EQUIPMENT_DICT['Dumbbell'],
+            EQUIPMENT_DICT['Body Weight'],
+        ]
     ).get_training_plans()

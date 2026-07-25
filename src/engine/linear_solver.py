@@ -4,7 +4,7 @@ import numpy as np
 from typing import List, Dict, Literal, Tuple
 
 from aiohttp.web_middlewares import normalize_path_middleware
-from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpAffineExpression, LpStatus
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpAffineExpression, LpStatus, LpMaximize
 
 from models.data_models import ScenarioParameters, Exercise
 from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
@@ -14,9 +14,9 @@ class LinearSolver:
     def __init__(self, scenario_params: ScenarioParameters):
         self.scenario_params = scenario_params
 
-        self.valid_exercises = self._get_valid_exercises()
-        self.strain_matrix = self._build_strain_matrix()
-        self.exercise_cosine_matrix = self._build_cosine_matrix()
+        self.valid_exercises: List[Exercise] = self._get_valid_exercises()
+        self.strain_matrix: pd.DataFrame = self._build_strain_matrix()
+        self.exercise_cosine_matrix: pd.DataFrame = self._build_cosine_matrix()
 
         self.problem = None
 
@@ -106,28 +106,42 @@ class LinearSolver:
         Creates all the required restrictions for the linear solver.
         :return:
         """
-        for muscle in self.scenario_params.targeted_muscles:
+        # Each muscle group must have a total strain(sum strain of all muscles) above the scenario's target strain
+        for group in self.scenario_params.target_groups:
             total_strain = lpSum(
                 self.strain_matrix.at[muscle.name, exercise] * self.var_exercise[exercise]
+                for muscle in group.components
                 for exercise in self.strain_matrix.columns
             )
 
-            self.problem += (total_strain >= self.scenario_params.training_target,
-                             f'{muscle.name}_strain_restriction')
+            self.problem += (
+                total_strain >= self.scenario_params.training_target,
+                f'{group.name}_min_strain_restriction'
+            )
+
+        # Each muscle group must have a total strain(sum strain of all muscles) below the sum of the
+        # scenario's overtraining delta plus target strain
+        for group in self.scenario_params.target_groups:
+            total_strain = lpSum(
+                self.strain_matrix.at[muscle.name, exercise] * self.var_exercise[exercise]
+                for muscle in group.components
+                for exercise in self.strain_matrix.columns
+            )
+
+            self.problem += (
+                total_strain <= self.scenario_params.training_target + self.scenario_params.overtraining_delta,
+                f'{group.name}_max_strain_restriction'
+            )
 
     def _create_objective_function(self):
         """
         Creates the objective function for the linear solver.
         """
-        total_strain_comp = (
-            self.scenario_params.total_strain_weight * lpSum(
-                self.strain_matrix.at[muscle, exercise] * self.var_exercise[exercise]
-                for muscle in self.strain_matrix.index
-                for exercise in self.strain_matrix.columns
-            )
+        # minimize the total number of exercises done
+        total_obj_function = lpSum(
+            self.var_exercise[exercise.name]
+            for exercise in self.valid_exercises
         )
-
-        total_obj_function = total_strain_comp
 
         self.problem += total_obj_function
 

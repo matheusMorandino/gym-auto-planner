@@ -9,16 +9,23 @@ class ScenarioHandler:
     def __init__(
         self,
         training_target: int,
+        overtraining_delta: int,
         group_list: List[MuscleGroup],
-        valid_equipments: List[Equipment] = list(EQUIPMENT_DICT.values())
+        valid_equipments: List[Equipment] = None
     ):
+        if valid_equipments is None:
+            valid_equipments = list(EQUIPMENT_DICT.values())
+
         self.training_target = training_target
+        self.overtraining_delta = overtraining_delta
         self.group_list = group_list
         self.valid_equipments = valid_equipments
 
         self.scenario_params = ScenarioParameters(
             training_target=training_target,
+            overtraining_delta=overtraining_delta,
             valid_equipments=valid_equipments,
+            target_groups=self.group_list,
             targeted_muscles=self._build_muscles_list(self.group_list)
         )
 
@@ -26,7 +33,7 @@ class ScenarioHandler:
         """
         Takes a list of muscle groups and returns a list of muscle groups
         :param group_list: list of muscle groups
-        :return:
+        :return: list of muscles
         """
         muscles_list = []
 
@@ -45,6 +52,7 @@ class ScenarioHandler:
 if __name__ == '__main__':
     ScenarioHandler(
         training_target=1,
+        overtraining_delta=2,
         group_list=[
             MUSCLE_GROUPS['biceps'],
             MUSCLE_GROUPS['forearms'],

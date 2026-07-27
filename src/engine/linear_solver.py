@@ -3,10 +3,9 @@ import itertools
 import numpy as np
 from typing import List, Dict, Literal, Tuple
 
-from aiohttp.web_middlewares import normalize_path_middleware
-from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpAffineExpression, LpStatus, LpMaximize
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatus, LpStatusOptimal
 
-from models.data_models import ScenarioParameters, Exercise
+from models.data_models import ScenarioParameters, Exercise, TrainingSolution
 from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
 
 
@@ -145,7 +144,7 @@ class LinearSolver:
 
         self.problem += total_obj_function
 
-    def solve(self):
+    def solve(self) -> TrainingSolution:
         # Defining problem
         self.problem = LpProblem("Training_Optimization", LpMinimize)
 
@@ -156,8 +155,16 @@ class LinearSolver:
         # Solve the problem
         self.problem.solve()
 
-        # print solution
-        for exercise in self.valid_exercises:
-            usage = self.var_exercise[exercise.name].varValue
-            if isinstance(usage, float) and usage > 0:
-                print(f'{exercise.name} -> {usage}')
+        # Create solution object
+        solution = TrainingSolution(
+            solution_status=LpStatus[self.problem.status],
+            exercise_list=[]
+        )
+
+        if self.problem.status == LpStatusOptimal:
+            for exercise, var in self.var_exercise.items():
+                usage = var.varValue
+                if isinstance(usage, float) and usage > 0:
+                    solution.exercise_list.append(EXERCISE_DICT[exercise])
+
+        return solution

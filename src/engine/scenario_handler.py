@@ -48,21 +48,27 @@ class ScenarioHandler:
 
         solution = solver.solve()
 
+        # print solution
+        for exercise in solution.exercise_list:
+            print(f'>> {exercise.name}')
+
 
 if __name__ == '__main__':
     ScenarioHandler(
         training_target=2,
         overtraining_delta=2,
         group_list=[
-            MUSCLE_GROUPS['biceps'],
-            MUSCLE_GROUPS['forearms'],
-            MUSCLE_GROUPS['triceps'],
-            MUSCLE_GROUPS['front_delts'],
-            MUSCLE_GROUPS['side_delts'],
-            MUSCLE_GROUPS['rear_delts'],
-            MUSCLE_GROUPS['upper_pecs'],
-            MUSCLE_GROUPS['lower_pecs'],
-            MUSCLE_GROUPS['middle_pecs'],
+            # MUSCLE_GROUPS['biceps'],
+            # MUSCLE_GROUPS['forearms'],
+            # MUSCLE_GROUPS['triceps'],
+            # MUSCLE_GROUPS['front_delts'],
+            # MUSCLE_GROUPS['side_delts'],
+            # MUSCLE_GROUPS['rear_delts'],
+            # MUSCLE_GROUPS['upper_pecs'],
+            # MUSCLE_GROUPS['lower_pecs'],
+            # MUSCLE_GROUPS['middle_pecs'],
+            MUSCLE_GROUPS['upper_abs'],
+            MUSCLE_GROUPS['lower_abs'],
         ],
         valid_equipments=[
             EQUIPMENT_DICT['Barbell'],

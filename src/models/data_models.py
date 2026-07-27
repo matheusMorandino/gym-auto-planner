@@ -58,4 +58,5 @@ class ScenarioParameters:
 
 @dataclass
 class TrainingSolution:
-    pass
+    solution_status: str = field(default='')
+    exercise_list: List[Exercise] = field(default_factory=list)

@@ -48,9 +48,9 @@ class ScenarioParameters:
     primary_score: float = field(default=1)
     secondary_score: float = field(default=0.8)
     synergistic_score: float = field(default=0.5)
-    stabilizing_score: float = field(default=0.2)
-    antagonist_score: float = field(default=0.1)
-    dynamic_score: float = field(default=0.2)
+    stabilizing_score: float = field(default=0.5)
+    antagonist_score: float = field(default=0.4)
+    dynamic_score: float = field(default=0.3)
 
     # optimization target weights
     total_strain_weight: float = field(default=1)

@@ -38,7 +38,9 @@ class Exercise:
 
 @dataclass
 class ScenarioParameters:
-    training_target: int = field(default=0)
+    training_target: float = field(default=0)
+    overtraining_delta: float = field(default=0)
+    target_groups: List[MuscleGroup] = field(default_factory=list)
     targeted_muscles: List[Muscle] = field(default_factory=list)
     valid_equipments: List[Equipment] = field(default_factory=list)
 
@@ -46,9 +48,9 @@ class ScenarioParameters:
     primary_score: float = field(default=1)
     secondary_score: float = field(default=0.8)
     synergistic_score: float = field(default=0.5)
-    stabilizing_score: float = field(default=0.2)
-    antagonist_score: float = field(default=0.1)
-    dynamic_score: float = field(default=0.2)
+    stabilizing_score: float = field(default=0.5)
+    antagonist_score: float = field(default=0.4)
+    dynamic_score: float = field(default=0.3)
 
     # optimization target weights
     total_strain_weight: float = field(default=1)
@@ -56,4 +58,5 @@ class ScenarioParameters:
 
 @dataclass
 class TrainingSolution:
-    pass
+    solution_status: str = field(default='')
+    exercise_list: List[Exercise] = field(default_factory=list)

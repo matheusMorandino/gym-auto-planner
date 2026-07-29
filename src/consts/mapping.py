@@ -105,8 +105,8 @@ def __build_training_list(df_raw: pd.DataFrame) -> Dict[Tuple[str, str], Exercis
     # Building muscle usage vector
     df_raw['muscle_vector'] = df_raw.apply(
         lambda x: {
-            muscle:
-            1
+            muscle: (
+                1
                 if muscle
                 in (x['primary_muscles'] +
                  x['secondary_muscles'] +
@@ -115,6 +115,7 @@ def __build_training_list(df_raw: pd.DataFrame) -> Dict[Tuple[str, str], Exercis
                  x['antagonist_muscles'] +
                  x['dynamic_muscles'])
                 else 0
+            )
             for muscle
             in MUSCLES_DICT.keys()},
         axis=1

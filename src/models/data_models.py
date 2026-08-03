@@ -37,7 +37,7 @@ class Exercise:
 
 
 @dataclass
-class ScenarioParameters:
+class ModelParameters:
     training_target: float = field(default=0)
     overtraining_delta: float = field(default=0)
     target_groups: List[MuscleGroup] = field(default_factory=list)

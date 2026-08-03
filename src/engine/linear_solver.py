@@ -5,12 +5,12 @@ from typing import List, Dict, Literal, Tuple
 
 from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatus, LpStatusOptimal
 
-from models.data_models import ScenarioParameters, Exercise, TrainingSolution
+from models.data_models import ModelParameters, Exercise, TrainingSolution
 from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
 
 
 class LinearSolver:
-    def __init__(self, scenario_params: ScenarioParameters):
+    def __init__(self, scenario_params: ModelParameters):
         self.scenario_params = scenario_params
 
         self.valid_exercises: List[Exercise] = self._get_valid_exercises()

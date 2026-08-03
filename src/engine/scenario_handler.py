@@ -2,7 +2,7 @@ from typing import List
 
 from src.engine.linear_solver import LinearSolver
 from src.consts.mapping import EQUIPMENT_DICT, MUSCLE_GROUPS
-from src.models.data_models import Equipment, Muscle, MuscleGroup, ScenarioParameters, TrainingSolution
+from src.models.data_models import Equipment, Muscle, MuscleGroup, ModelParameters, TrainingSolution
 
 
 class ScenarioHandler:
@@ -21,7 +21,7 @@ class ScenarioHandler:
         self.group_list = group_list
         self.valid_equipments = valid_equipments
 
-        self.scenario_params = ScenarioParameters(
+        self.scenario_params = ModelParameters(
             training_target=training_target,
             overtraining_delta=overtraining_delta,
             valid_equipments=valid_equipments,

@@ -34,7 +34,7 @@ class LinearSolver:
     def _build_cosine_matrix(self) -> pd.DataFrame:
         """
         Create a cosine distance matrix between all present exercises. Used in measuring
-        redundancy between two given exercises.
+        redundancy between two given exercises(1 is completely different, 0 is identical).
         :return:
         """
         cosine_matrix = pd.DataFrame(
@@ -130,6 +130,14 @@ class LinearSolver:
             self.problem += (
                 total_strain <= self.scenario_params.training_target + self.scenario_params.overtraining_delta,
                 f'{group.name}_max_strain_restriction'
+            )
+
+        # For each pair of used exercises their cosine distance must be larger than the similarity threshold
+        for exercise_i, exercise_j in itertools.combinations(self.valid_exercises, 2):
+            self.problem += (
+                self.scenario_params.similarity_threshold - (2 - (self.var_exercise[exercise_i.name] + self.var_exercise[exercise_j.name])) * 1000
+                <= self.exercise_cosine_matrix.at[exercise_i.name, exercise_j.name],
+                f'{exercise_i.name}_{exercise_j.name}_similarity_restriction'
             )
 
     def _create_objective_function(self):

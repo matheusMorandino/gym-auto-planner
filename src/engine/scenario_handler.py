@@ -58,7 +58,7 @@ if __name__ == '__main__':
     ScenarioHandler(
         training_target=2,
         overtraining_delta=2,
-        similarity_threshold=0,
+        similarity_threshold=0.6,
         group_list=[
             MUSCLE_GROUPS['biceps'],
             MUSCLE_GROUPS['forearms'],

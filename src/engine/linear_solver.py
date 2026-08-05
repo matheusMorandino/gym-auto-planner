@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from typing import List, Dict, Literal, Tuple
 
-from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatus, LpStatusOptimal
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatus, LpStatusOptimal, LpAffineExpression
 
 from models.data_models import ScenarioParameters, Exercise, TrainingSolution
 from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
@@ -140,9 +140,10 @@ class LinearSolver:
                 f'{exercise_i.name}_{exercise_j.name}_similarity_restriction'
             )
 
-    def _create_objective_function(self):
+    def _create_objective_function(self) -> LpAffineExpression:
         """
         Creates the objective function for the linear solver.
+        :return: LpAffineExpression for the objective function
         """
         # minimize the total number of exercises done
         total_obj_function = lpSum(
@@ -150,7 +151,7 @@ class LinearSolver:
             for exercise in self.valid_exercises
         )
 
-        self.problem += total_obj_function
+        return total_obj_function
 
     def solve(self) -> TrainingSolution:
         # Defining problem
@@ -158,7 +159,8 @@ class LinearSolver:
 
         self._create_variables()
         self._create_restictions()
-        self._create_objective_function()
+
+        self.problem += self._create_objective_function()
 
         # Solve the problem
         self.problem.solve()
@@ -170,9 +172,13 @@ class LinearSolver:
         )
 
         if self.problem.status == LpStatusOptimal:
-            for exercise, var in self.var_exercise.items():
+            result_dict = dict()
+            for exercise_name, var in self.var_exercise.items():
                 usage = var.varValue
                 if isinstance(usage, float) and usage > 0:
-                    solution.exercise_list.append(EXERCISE_DICT[exercise])
+                    result_dict[sum(EXERCISE_DICT[exercise_name].muscle_vector.values())] = EXERCISE_DICT[exercise_name]
+
+            # Ordering the exercises by their total strain value and adding them to the solution
+            solution.exercise_list = [result_dict[key] for key in sorted(result_dict.keys())]
 
         return solution

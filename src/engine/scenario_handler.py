@@ -47,7 +47,7 @@ class ScenarioHandler:
     def get_training_plans(self) -> List[TrainingSolution]:
         solver = LinearSolver(scenario_params=self.scenario_params)
 
-        solution = solver.solve()
+        solution = solver.solve_single()
 
         # print solution
         for exercise in solution.exercise_list:
@@ -58,19 +58,27 @@ if __name__ == '__main__':
     ScenarioHandler(
         training_target=2,
         overtraining_delta=2,
-        similarity_threshold=0.6,
+        similarity_threshold=0.4,
         group_list=[
-            MUSCLE_GROUPS['biceps'],
-            MUSCLE_GROUPS['forearms'],
-            MUSCLE_GROUPS['triceps'],
-            MUSCLE_GROUPS['front_delts'],
-            MUSCLE_GROUPS['side_delts'],
-            MUSCLE_GROUPS['rear_delts'],
-            MUSCLE_GROUPS['upper_pecs'],
-            MUSCLE_GROUPS['lower_pecs'],
-            MUSCLE_GROUPS['middle_pecs'],
-            # MUSCLE_GROUPS['upper_abs'],
-            # MUSCLE_GROUPS['lower_abs'],
+            # MUSCLE_GROUPS['biceps'],
+            # MUSCLE_GROUPS['forearms'],
+            # MUSCLE_GROUPS['triceps'],
+            # MUSCLE_GROUPS['front_delts'],
+            # MUSCLE_GROUPS['side_delts'],
+            # MUSCLE_GROUPS['rear_delts'],
+            # MUSCLE_GROUPS['upper_pecs'],
+            # MUSCLE_GROUPS['lower_pecs'],
+            # MUSCLE_GROUPS['middle_pecs'],
+
+            MUSCLE_GROUPS['upper_abs'],
+            MUSCLE_GROUPS['lower_abs'],
+
+            MUSCLE_GROUPS['quads'],
+            MUSCLE_GROUPS['hamstrings'],
+            MUSCLE_GROUPS['glutes'],
+            MUSCLE_GROUPS['calves'],
+            MUSCLE_GROUPS['hip_abductor'],
+            MUSCLE_GROUPS['hip_adductor'],
         ],
         valid_equipments=[
             EQUIPMENT_DICT['Barbell'],

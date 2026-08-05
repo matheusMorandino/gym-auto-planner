@@ -140,6 +140,16 @@ class LinearSolver:
                 f'{exercise_i.name}_{exercise_j.name}_similarity_restriction'
             )
 
+    def _create_objective_restriction(self, exclude_solution: int):
+        """
+        Creates a restriction for the objective function to avoid getting the same solution multiple times during multiple solutions runs.
+        :param exclude_solution: Value to exclude from the solution as a restriction.
+        """
+        self.problem += (
+            self._create_objective_function() >= exclude_solution + 1,
+            'exclude_previous_solution_restriction'
+        )
+
     def _create_objective_function(self) -> LpAffineExpression:
         """
         Creates the objective function for the linear solver.
@@ -153,12 +163,18 @@ class LinearSolver:
 
         return total_obj_function
 
-    def solve(self) -> TrainingSolution:
+    def solve_single(self, exclude_solution: int = None) -> TrainingSolution:
+        """
+        Runs the linear solver for a single solution.
+        :param exclude_solution: Value to exclude from the solution as a restriction. This is used to avoid getting the same solution multiple times during multiple solutions runs.
+        """
         # Defining problem
         self.problem = LpProblem("Training_Optimization", LpMinimize)
 
         self._create_variables()
         self._create_restictions()
+        if exclude_solution is not None:
+            self._create_objective_restriction(exclude_solution)
 
         self.problem += self._create_objective_function()
 
@@ -182,3 +198,21 @@ class LinearSolver:
             solution.exercise_list = [result_dict[key] for key in sorted(result_dict.keys())]
 
         return solution
+
+    def solve_multiple(self, n_solutions: int) -> List[TrainingSolution]:
+        """
+        Runs the linear solver for multiple solutions. The previous solution is used as a restriction in the next as a way of generation multiple valid but suboptimal solutions.
+        :param n_solutions: Number of solutions to generate.
+        """
+        solutions = []
+        exclude_solution = None
+
+        for _ in range(n_solutions):
+            solution = self.solve_single(exclude_solution=exclude_solution)
+            if solution.solution_status == 'Optimal':
+                solutions.append(solution)
+                exclude_solution = len(solution.exercise_list)
+            else:
+                break
+
+        return solutions

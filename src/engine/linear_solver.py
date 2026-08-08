@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import itertools
 import numpy as np
@@ -50,10 +51,10 @@ class LinearSolver:
             dot_prod = np.dot(vect_i, vect_j)
             norm_i = np.linalg.norm(vect_i)
             norm_j = np.linalg.norm(vect_j)
-            cosine_similar = dot_prod / (norm_i * norm_j)
+            cosine_similar = round(dot_prod / (norm_i * norm_j), 6)
 
             # Adding cosine distance between i and j to the matrix
-            cosine_matrix.at[i, j] = 1 - cosine_similar
+            cosine_matrix.at[i, j] = math.sqrt(1 - cosine_similar**2)
 
         return cosine_matrix.fillna(0)
 

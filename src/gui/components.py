@@ -4,7 +4,6 @@ from typing import Callable, Optional, List
 import flet as ft
 
 
-@ft.control
 class SliderCard(ft.Card):
     """
     Builds a reusable slider card with title, description, value display and callback.
@@ -86,7 +85,6 @@ class SliderCard(ft.Card):
             e.page.update()
 
 
-@ft.control
 class MultiSelectSearchCard(ft.Card):
     """
     Builds a reusable multi-select search card with title, description, and callback.

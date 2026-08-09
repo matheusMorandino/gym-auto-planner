@@ -19,14 +19,14 @@ class ScenarioHandler:
 
         self.training_target = training_target
         self.overtraining_delta = overtraining_delta
-        self.group_list = group_list
-        self.valid_equipments = valid_equipments
+        self.group_list = [MUSCLE_GROUPS[group] for group in group_list]
+        self.valid_equipments = [EQUIPMENT_DICT[equip] for equip in valid_equipments]
 
         self.scenario_params = ModelParameters(
             training_target=training_target,
             overtraining_delta=overtraining_delta,
             similarity_threshold=similarity_threshold,
-            valid_equipments=valid_equipments,
+            valid_equipments=self.valid_equipments,
             target_groups=self.group_list,
             targeted_muscles=self._build_muscles_list(self.group_list)
         )
@@ -44,14 +44,15 @@ class ScenarioHandler:
 
         return muscles_list
 
-    def get_training_plans(self) -> List[TrainingSolution]:
+    def get_training_plans(self, n_target: int = 1) -> List[TrainingSolution]:
+        """
+        Returns a list of training solutions
+        :param n_target: number of training solutions to return
+        :return: list of training solutions
+        """
         solver = LinearSolver(scenario_params=self.scenario_params)
 
-        solution = solver.solve_single()
-
-        # print solution
-        for exercise in solution.exercise_list:
-            print(f'>> {exercise.name}')
+        return solver.solve_multiple(n_solutions=n_target)
 
 
 if __name__ == '__main__':
@@ -60,29 +61,29 @@ if __name__ == '__main__':
         overtraining_delta=2,
         similarity_threshold=0.4,
         group_list=[
-            # MUSCLE_GROUPS['biceps'],
-            # MUSCLE_GROUPS['forearms'],
-            # MUSCLE_GROUPS['triceps'],
-            # MUSCLE_GROUPS['front_delts'],
-            # MUSCLE_GROUPS['side_delts'],
-            # MUSCLE_GROUPS['rear_delts'],
-            # MUSCLE_GROUPS['upper_pecs'],
-            # MUSCLE_GROUPS['lower_pecs'],
-            # MUSCLE_GROUPS['middle_pecs'],
+            # 'biceps',
+            # 'forearms',
+            # 'triceps',
+            # 'front_delts',
+            # 'side_delts',
+            # 'rear_delts',
+            # 'upper_pecs',
+            # 'lower_pecs',
+            # 'middle_pecs',
 
-            MUSCLE_GROUPS['upper_abs'],
-            MUSCLE_GROUPS['lower_abs'],
+            'upper_abs',
+            'lower_abs',
 
-            MUSCLE_GROUPS['quads'],
-            MUSCLE_GROUPS['hamstrings'],
-            MUSCLE_GROUPS['glutes'],
-            MUSCLE_GROUPS['calves'],
-            MUSCLE_GROUPS['hip_abductor'],
-            MUSCLE_GROUPS['hip_adductor'],
+            'quads',
+            'hamstrings',
+            'glutes',
+            'calves',
+            'hip_abductor',
+            'hip_adductor',
         ],
         valid_equipments=[
-            EQUIPMENT_DICT['Barbell'],
-            EQUIPMENT_DICT['Dumbbell'],
-            EQUIPMENT_DICT['Body Weight'],
+            'Barbell',
+            'Dumbbell',
+            'Body Weight',
         ]
     ).get_training_plans()

@@ -1,7 +1,8 @@
 import flet as ft
 
-from src.consts.mapping import EQUIPMENT_DICT, EXERCISE_DICT
-from gui.components import SliderCard, MultiSelectSearchCard
+from src.consts.mapping import EQUIPMENT_DICT, EXERCISE_DICT, MUSCLE_GROUPS
+from src.engine.scenario_handler import ScenarioHandler
+from src.gui.components import SliderCard, MultiSelectSearchCard
 
 
 scenario_params = {
@@ -37,6 +38,12 @@ scenario_params = {
         "options": list(EXERCISE_DICT.keys()),
         "title": "Excluded exercises",
         "description": "Choose the exercises you want to exclude from your workout."
+    },
+    "target_muscle_groups": {
+        "value": [],
+        "options": list(MUSCLE_GROUPS.keys()),
+        "title": "Target muscle groups",
+        "description": "Choose the muscle groups you want to target in your workout."
     }
 }
 
@@ -67,13 +74,24 @@ def build_equipment_card():
         width=550
     )
 
+
+def build_target_muscles_card():
+    return MultiSelectSearchCard(
+        title=scenario_params["target_muscle_groups"]["title"],
+        description=scenario_params["target_muscle_groups"]["description"],
+        options=scenario_params["target_muscle_groups"]["options"],
+        on_value_change=lambda value: scenario_params["target_muscle_groups"].update({"value": value}),
+        width=550
+    )
+
+
 def build_excluded_exercises_card():
     return MultiSelectSearchCard(
         title=scenario_params["excluded_exercises"]["title"],
         description=scenario_params["excluded_exercises"]["description"],
         options=scenario_params["excluded_exercises"]["options"],
         on_value_change=lambda value: scenario_params["excluded_exercises"].update({"value": value}),
-        width=550
+        width=1120
     )
 
 
@@ -88,6 +106,29 @@ def build_print_button():
             print(f"{key}: {value['value'] if 'value' in value else value}")
 
     return ft.ElevatedButton("Print scenario parameters", on_click=on_click)
+
+
+def build_run_solution_button():
+    """
+    Creates button that runs a solution on the ScenarioHandler based on the defined parameters. This is for testing purposes only.
+    """
+    def on_click(e):
+        handler = ScenarioHandler(
+            training_target=scenario_params["training_target"]["value"],
+            overtraining_delta=scenario_params["overtraining_delta"]["value"],
+            similarity_threshold=scenario_params["similarity_threshold"]["value"],
+            group_list=scenario_params["target_muscle_groups"]["value"],
+            valid_equipments=scenario_params["valid_equipments"]["value"]
+        )
+        solutions = handler.get_training_plans(n_target=3)
+
+        for i, solution in enumerate(solutions):
+            print(f">>> Solution {i + 1}:")
+            for exercise in solution.exercise_list:
+                print(f"- {exercise.name}")
+            print('\n')
+
+    return ft.ElevatedButton("Run solution", on_click=on_click)
 
 
 def main(page: ft.Page):
@@ -106,13 +147,20 @@ def main(page: ft.Page):
         ft.Row(
             [
                 build_equipment_card(),
-                build_excluded_exercises_card()
+                build_target_muscles_card(),
             ],
             alignment = ft.MainAxisAlignment.CENTER,
         ),
         ft.Row(
             [
-                build_print_button()
+                build_excluded_exercises_card()
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        ),
+        ft.Row(
+            [
+                build_print_button(),
+                build_run_solution_button()
             ],
             alignment = ft.MainAxisAlignment.CENTER,
         )

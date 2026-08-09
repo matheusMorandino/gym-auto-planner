@@ -5,7 +5,7 @@ from typing import List, Tuple, Dict
 import src.utils as utils
 from src.models.data_models import Exercise, Muscle, Equipment, MuscleGroup
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.getcwd()))
+ROOT_DIR = utils.get_project_root()
 
 
 def __extract_list_from_str(text: str, sep: str = ',', none_ignore: bool = True) -> List[str]:

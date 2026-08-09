@@ -1,6 +1,6 @@
 import flet as ft
 
-from src.consts.mapping import EQUIPMENT_DICT
+from src.consts.mapping import EQUIPMENT_DICT, EXERCISE_DICT
 from gui.components import SliderCard, MultiSelectSearchCard
 
 
@@ -31,6 +31,12 @@ scenario_params = {
         "options": list(EQUIPMENT_DICT.keys()),
         "title": "Valid equipments",
         "description": "Choose the equipments you want to include in your workout. If left empty all equipments will be included.",
+    },
+    "excluded_exercises": {
+        "value": [],
+        "options": list(EXERCISE_DICT.keys()),
+        "title": "Excluded exercises",
+        "description": "Choose the exercises you want to exclude from your workout."
     }
 }
 
@@ -58,6 +64,16 @@ def build_equipment_card():
         description=scenario_params["valid_equipments"]["description"],
         options=scenario_params["valid_equipments"]["options"],
         on_value_change=lambda value: scenario_params["valid_equipments"].update({"value": value}),
+        width=550
+    )
+
+def build_excluded_exercises_card():
+    return MultiSelectSearchCard(
+        title=scenario_params["excluded_exercises"]["title"],
+        description=scenario_params["excluded_exercises"]["description"],
+        options=scenario_params["excluded_exercises"]["options"],
+        on_value_change=lambda value: scenario_params["excluded_exercises"].update({"value": value}),
+        width=550
     )
 
 
@@ -89,7 +105,8 @@ def main(page: ft.Page):
         ),
         ft.Row(
             [
-                build_equipment_card()
+                build_equipment_card(),
+                build_excluded_exercises_card()
             ],
             alignment = ft.MainAxisAlignment.CENTER,
         ),

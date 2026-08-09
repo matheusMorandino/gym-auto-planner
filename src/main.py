@@ -1,6 +1,6 @@
 import flet as ft
 
-from gui.components import value_slider_card
+from gui.components import SliderCard
 
 
 scenario_params = {
@@ -27,7 +27,7 @@ def build_param_slider(key: str) -> ft.Card:
     def on_change(value: float) -> None:
         scenario_params[key]["value"] = value
 
-    return value_slider_card(
+    return SliderCard(
         title=config["title"],
         description=config["description"],
         initial_value=config["value"],

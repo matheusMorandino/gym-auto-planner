@@ -40,6 +40,7 @@ class Exercise:
 class ModelParameters:
     training_target: float = field(default=0)
     overtraining_delta: float = field(default=0)
+    similarity_threshold: float = field(default=0)
     target_groups: List[MuscleGroup] = field(default_factory=list)
     targeted_muscles: List[Muscle] = field(default_factory=list)
     valid_equipments: List[Equipment] = field(default_factory=list)

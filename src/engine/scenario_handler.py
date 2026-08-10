@@ -1,8 +1,8 @@
 from typing import List
 
 from src.engine.linear_solver import LinearSolver
-from src.consts.mapping import EQUIPMENT_DICT, MUSCLE_GROUPS
-from src.models.data_models import Equipment, Muscle, MuscleGroup, ModelParameters, TrainingSolution
+from src.consts.mapping import EQUIPMENT_DICT, MUSCLE_GROUPS, EXERCISE_DICT
+from src.models.data_models import Muscle, MuscleGroup, ModelParameters, TrainingSolution
 
 
 class ScenarioHandler:
@@ -11,21 +11,26 @@ class ScenarioHandler:
         training_target: int,
         overtraining_delta: int,
         similarity_threshold: float,
-        group_list: List[MuscleGroup],
-        valid_equipments: List[Equipment] = None
+        group_list: List[str],
+        valid_equipments: List[str] = None,
+        exercise_blacklist: List[str] = None
     ):
         if valid_equipments is None:
             valid_equipments = list(EQUIPMENT_DICT.values())
+        if exercise_blacklist is None:
+            exercise_blacklist = []
 
         self.training_target = training_target
         self.overtraining_delta = overtraining_delta
         self.group_list = [MUSCLE_GROUPS[group] for group in group_list]
         self.valid_equipments = [EQUIPMENT_DICT[equip] for equip in valid_equipments]
+        self.exercise_blacklist = [EXERCISE_DICT[exercise] for exercise in exercise_blacklist]
 
         self.scenario_params = ModelParameters(
             training_target=training_target,
             overtraining_delta=overtraining_delta,
             similarity_threshold=similarity_threshold,
+            exercise_blacklist=self.exercise_blacklist,
             valid_equipments=self.valid_equipments,
             target_groups=self.group_list,
             targeted_muscles=self._build_muscles_list(self.group_list)

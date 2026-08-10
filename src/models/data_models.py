@@ -44,6 +44,7 @@ class ModelParameters:
     target_groups: List[MuscleGroup] = field(default_factory=list)
     targeted_muscles: List[Muscle] = field(default_factory=list)
     valid_equipments: List[Equipment] = field(default_factory=list)
+    exercise_blacklist: List[Exercise] = field(default_factory=list)
 
     # strain groups scores
     primary_score: float = field(default=1)

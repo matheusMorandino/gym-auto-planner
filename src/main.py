@@ -118,7 +118,8 @@ def build_run_solution_button():
             overtraining_delta=scenario_params["overtraining_delta"]["value"],
             similarity_threshold=scenario_params["similarity_threshold"]["value"],
             group_list=scenario_params["target_muscle_groups"]["value"],
-            valid_equipments=scenario_params["valid_equipments"]["value"]
+            valid_equipments=scenario_params["valid_equipments"]["value"],
+            exercise_blacklist=scenario_params["excluded_exercises"]["value"]
         )
         solutions = handler.get_training_plans(n_target=3)
 

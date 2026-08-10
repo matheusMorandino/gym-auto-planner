@@ -141,6 +141,14 @@ class LinearSolver:
                 f'{exercise_i.name}_{exercise_j.name}_similarity_restriction'
             )
 
+        # Force exclusion of exercises listed in the scenario's exercise blacklist
+        for exercise in self.scenario_params.exercise_blacklist:
+            if exercise.name in self.var_exercise:
+                self.problem += (
+                    self.var_exercise[exercise.name] == 0,
+                    f'{exercise.name}_blacklist_restriction'
+                )
+
     def _create_objective_restriction(self, exclude_solution: int):
         """
         Creates a restriction for the objective function to avoid getting the same solution multiple times during multiple solutions runs.

@@ -2,9 +2,7 @@ import os
 import pandas as pd
 from typing import List, Tuple, Dict
 
-# pyrefly: ignore [missing-import]
 import src.utils as utils
-# pyrefly: ignore [missing-import]
 from src.models.data_models import Exercise, Muscle, Equipment, MuscleGroup
 
 ROOT_DIR = utils.get_project_root()

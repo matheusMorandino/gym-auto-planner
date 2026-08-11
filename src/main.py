@@ -31,7 +31,7 @@ scenario_params = {
         "value": [],
         "options": list(EQUIPMENT_DICT.keys()),
         "title": "Valid equipments",
-        "description": "Choose the equipments you want to include in your workout. If left empty all equipments will be included.",
+        "description": "Choose the equipments you consider valid. If left empty all equipments will be included.",
     },
     "excluded_exercises": {
         "value": [],
@@ -44,6 +44,12 @@ scenario_params = {
         "options": list(MUSCLE_GROUPS.keys()),
         "title": "Target muscle groups",
         "description": "Choose the muscle groups you want to target in your workout."
+    },
+    "forced_exercises": {
+        "value": [],
+        "options": list(EXERCISE_DICT.keys()),
+        "title": "Forced exercises",
+        "description": "Choose the exercises you want to force into your workout."
     }
 }
 
@@ -91,7 +97,17 @@ def build_excluded_exercises_card():
         description=scenario_params["excluded_exercises"]["description"],
         options=scenario_params["excluded_exercises"]["options"],
         on_value_change=lambda value: scenario_params["excluded_exercises"].update({"value": value}),
-        width=1120
+        width=550
+    )
+
+
+def build_forced_exercises_card():
+    return MultiSelectSearchCard(
+        title=scenario_params["forced_exercises"]["title"],
+        description=scenario_params["forced_exercises"]["description"],
+        options=scenario_params["forced_exercises"]["options"],
+        on_value_change=lambda value: scenario_params["forced_exercises"].update({"value": value}),
+        width=550
     )
 
 
@@ -105,7 +121,7 @@ def build_print_button():
         for key, value in scenario_params.items():
             print(f"{key}: {value['value'] if 'value' in value else value}")
 
-    return ft.ElevatedButton("Print scenario parameters", on_click=on_click)
+    return ft.Button("Print scenario parameters", on_click=on_click)
 
 
 def build_run_solution_button():
@@ -129,7 +145,7 @@ def build_run_solution_button():
                 print(f"- {exercise.name}")
             print('\n')
 
-    return ft.ElevatedButton("Run solution", on_click=on_click)
+    return ft.Button("Run solution", on_click=on_click)
 
 
 def main(page: ft.Page):
@@ -150,11 +166,12 @@ def main(page: ft.Page):
                 build_equipment_card(),
                 build_target_muscles_card(),
             ],
-            alignment = ft.MainAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
         ),
         ft.Row(
             [
-                build_excluded_exercises_card()
+                build_excluded_exercises_card(),
+                build_forced_exercises_card()
             ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
@@ -163,7 +180,7 @@ def main(page: ft.Page):
                 build_print_button(),
                 build_run_solution_button()
             ],
-            alignment = ft.MainAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
         )
     )
 

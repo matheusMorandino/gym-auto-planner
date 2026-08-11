@@ -149,6 +149,14 @@ class LinearSolver:
                     f'{exercise.name}_blacklist_restriction'
                 )
 
+        # Force usage of exercises listed in the scenario's forced exercises list
+        for exercise in self.scenario_params.forced_exercises:
+            if exercise.name in self.var_exercise:
+                self.problem += (
+                    self.var_exercise[exercise.name] == 1,
+                    f'{exercise.name}_forced_restriction'
+                )
+
     def _create_objective_restriction(self, exclude_solution: int):
         """
         Creates a restriction for the objective function to avoid getting the same solution multiple times during multiple solutions runs.

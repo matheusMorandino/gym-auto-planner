@@ -13,24 +13,29 @@ class ScenarioHandler:
         similarity_threshold: float,
         group_list: List[str],
         valid_equipments: List[str] = None,
-        exercise_blacklist: List[str] = None
+        exercise_blacklist: List[str] = None,
+        forced_exercises: List[str] = None,
     ):
         if valid_equipments is None:
             valid_equipments = list(EQUIPMENT_DICT.values())
         if exercise_blacklist is None:
             exercise_blacklist = []
+        if forced_exercises is None:
+            forced_exercises = []
 
         self.training_target = training_target
         self.overtraining_delta = overtraining_delta
         self.group_list = [MUSCLE_GROUPS[group] for group in group_list]
         self.valid_equipments = [EQUIPMENT_DICT[equip] for equip in valid_equipments]
         self.exercise_blacklist = [EXERCISE_DICT[exercise] for exercise in exercise_blacklist]
+        self.forced_exercises = [EXERCISE_DICT[exercise] for exercise in forced_exercises]
 
         self.scenario_params = ModelParameters(
             training_target=training_target,
             overtraining_delta=overtraining_delta,
             similarity_threshold=similarity_threshold,
             exercise_blacklist=self.exercise_blacklist,
+            forced_exercises=self.forced_exercises,
             valid_equipments=self.valid_equipments,
             target_groups=self.group_list,
             targeted_muscles=self._build_muscles_list(self.group_list)

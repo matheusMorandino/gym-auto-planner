@@ -62,4 +62,6 @@ class ModelParameters:
 @dataclass
 class TrainingSolution:
     solution_status: str = field(default='')
+    objective_value: float = field(default=0)
+
     exercise_list: List[Exercise] = field(default_factory=list)

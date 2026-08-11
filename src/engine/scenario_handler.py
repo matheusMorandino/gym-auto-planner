@@ -16,11 +16,11 @@ class ScenarioHandler:
         exercise_blacklist: List[str] = None,
         forced_exercises: List[str] = None,
     ):
-        if valid_equipments is None:
-            valid_equipments = list(EQUIPMENT_DICT.values())
-        if exercise_blacklist is None:
+        if valid_equipments is None or valid_equipments == []:
+            valid_equipments = list(EQUIPMENT_DICT.keys())
+        if exercise_blacklist is None or exercise_blacklist == []:
             exercise_blacklist = []
-        if forced_exercises is None:
+        if forced_exercises is None or forced_exercises == []:
             forced_exercises = []
 
         self.training_target = training_target

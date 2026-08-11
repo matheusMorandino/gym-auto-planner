@@ -6,7 +6,7 @@ from typing import List, Dict, Literal, Tuple
 
 from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatus, LpStatusOptimal, LpAffineExpression
 
-from models.data_models import ModelParameters, Exercise, TrainingSolution
+from src.models.data_models import ModelParameters, Exercise, TrainingSolution
 from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
 
 
@@ -190,6 +190,7 @@ class LinearSolver:
 
         self._create_variables()
         self._create_restictions()
+
         if exclude_solution is not None:
             self._create_objective_restriction(exclude_solution)
 
@@ -201,18 +202,19 @@ class LinearSolver:
         # Create solution object
         solution = TrainingSolution(
             solution_status=LpStatus[self.problem.status],
+            objective_value=self.problem.objective.value(),
             exercise_list=[]
         )
 
         if self.problem.status == LpStatusOptimal:
-            result_dict = dict()
+            result_list = []
             for exercise_name, var in self.var_exercise.items():
                 usage = var.varValue
                 if isinstance(usage, float) and usage > 0:
-                    result_dict[sum(EXERCISE_DICT[exercise_name].muscle_vector.values())] = EXERCISE_DICT[exercise_name]
+                    result_list.append(EXERCISE_DICT[exercise_name])
 
             # Ordering the exercises by their total strain value and adding them to the solution
-            solution.exercise_list = [result_dict[key] for key in sorted(result_dict.keys())]
+            solution.exercise_list = sorted(result_list, key=lambda x: sum(x.muscle_vector.values()))
 
         return solution
 

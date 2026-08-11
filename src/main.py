@@ -135,7 +135,8 @@ def build_run_solution_button():
             similarity_threshold=scenario_params["similarity_threshold"]["value"],
             group_list=scenario_params["target_muscle_groups"]["value"],
             valid_equipments=scenario_params["valid_equipments"]["value"],
-            exercise_blacklist=scenario_params["excluded_exercises"]["value"]
+            exercise_blacklist=scenario_params["excluded_exercises"]["value"],
+            forced_exercises=scenario_params["forced_exercises"]["value"],
         )
         solutions = handler.get_training_plans(n_target=3)
 
@@ -151,6 +152,9 @@ def build_run_solution_button():
 def main(page: ft.Page):
     page.title = "Exercise auto planner"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    excluded_card = build_excluded_exercises_card()
+    forced_exercises_card = build_forced_exercises_card()
 
     page.add(
         ft.Row(
@@ -170,8 +174,8 @@ def main(page: ft.Page):
         ),
         ft.Row(
             [
-                build_excluded_exercises_card(),
-                build_forced_exercises_card()
+                excluded_card,
+                forced_exercises_card
             ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),

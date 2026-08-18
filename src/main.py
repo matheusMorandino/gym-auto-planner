@@ -68,6 +68,7 @@ def build_param_slider(key: str) -> ft.Card:
         max_value=config["max"],
         on_value_change=on_change,
         divisions=20,
+        expand=True,
     )
 
 
@@ -77,7 +78,7 @@ def build_equipment_card():
         description=scenario_params["valid_equipments"]["description"],
         options=scenario_params["valid_equipments"]["options"],
         on_value_change=lambda value: scenario_params["valid_equipments"].update({"value": value}),
-        width=550
+        expand=True,
     )
 
 
@@ -87,7 +88,7 @@ def build_target_muscles_card():
         description=scenario_params["target_muscle_groups"]["description"],
         options=scenario_params["target_muscle_groups"]["options"],
         on_value_change=lambda value: scenario_params["target_muscle_groups"].update({"value": value}),
-        width=550
+        expand=True,
     )
 
 
@@ -97,7 +98,7 @@ def build_excluded_exercises_card():
         description=scenario_params["excluded_exercises"]["description"],
         options=scenario_params["excluded_exercises"]["options"],
         on_value_change=lambda value: scenario_params["excluded_exercises"].update({"value": value}),
-        width=550
+        expand=True,
     )
 
 
@@ -107,7 +108,7 @@ def build_forced_exercises_card():
         description=scenario_params["forced_exercises"]["description"],
         options=scenario_params["forced_exercises"]["options"],
         on_value_change=lambda value: scenario_params["forced_exercises"].update({"value": value}),
-        width=550
+        expand=True,
     )
 
 
@@ -164,6 +165,7 @@ def main(page: ft.Page):
                 build_param_slider("similarity_threshold"),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
+            expand=True,
         ),
         ft.Row(
             [
@@ -171,6 +173,7 @@ def main(page: ft.Page):
                 build_target_muscles_card(),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
+            expand=True,
         ),
         ft.Row(
             [
@@ -178,6 +181,7 @@ def main(page: ft.Page):
                 forced_exercises_card
             ],
             alignment=ft.MainAxisAlignment.CENTER,
+            expand=True,
         ),
         ft.Row(
             [

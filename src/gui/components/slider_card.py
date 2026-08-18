@@ -15,9 +15,8 @@ class SliderCard(ft.Card):
         min_value: float,
         max_value: float,
         on_value_change: Optional[Callable[[float], None]] = None,
-        width: int = 360,
-        value_field_width: int = 90,
-        divisions: Optional[int] = None
+        divisions: Optional[int] = None,
+        expand: bool = False,
     ):
         self.on_value_change = on_value_change
 
@@ -30,23 +29,28 @@ class SliderCard(ft.Card):
 
         self.value_text = self._create_value_text(
             initial_value=initial_value,
-            value_field_width=value_field_width
         )
 
         self.slider.on_change = self.on_slider_update
 
         super().__init__(
+            expand=expand,
             content=ft.Container(
-                width=width,
                 padding=16,
+                expand=expand,
                 content=ft.Column(
                     [
                         ft.Text(title, size=16, weight=ft.FontWeight.BOLD),
                         ft.Text(description, size=12, color=ft.Colors.GREY_700),
-                        ft.Row([self.slider, self.value_text], alignment=ft.MainAxisAlignment.CENTER),
+                        ft.Row(
+                            [self.slider, self.value_text],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        ),
                     ],
                     tight=True,
                     spacing=10,
+                    horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                 ),
             )
         )
@@ -62,12 +66,10 @@ class SliderCard(ft.Card):
         )
 
     @staticmethod
-    def _create_value_text(initial_value, value_field_width):
-        return ft.TextField(
+    def _create_value_text(initial_value):
+        return ft.Text(
             value=f"{initial_value:g}",
             text_align=ft.TextAlign.RIGHT,
-            width=value_field_width,
-            read_only=True,
         )
 
     def on_slider_update(self, e: ft.Event[ft.Slider]) -> None:

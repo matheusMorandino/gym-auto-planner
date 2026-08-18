@@ -15,14 +15,15 @@ class MultiSelectSearchCard(ft.Card):
         description: str,
         options: list[str],
         on_value_change: Optional[Callable[[List[str]], None]] = None,
-        width: int = 360,
+        width: Optional[int] = None,
+        expand: bool = False,
     ):
         self.on_value_change = on_value_change
 
         self.dropdown = ft.Dropdown(
             options=[ft.DropdownOption(option) for option in options],
             hint_text="Select options",
-            width=width - 32,
+            expand=True,
             on_select=self._update_items_list,
             on_focus=self._clear_text_field,
             editable=True,
@@ -32,9 +33,11 @@ class MultiSelectSearchCard(ft.Card):
         self.chips = ft.Row([], wrap=True)
 
         super().__init__(
+            expand=expand,
             content=ft.Container(
-                width=width,
                 padding=16,
+                width=width if not expand else None,
+                expand=expand,
                 content=ft.Column(
                     [
                         ft.Text(title, size=16, weight=ft.FontWeight.BOLD),
@@ -44,6 +47,7 @@ class MultiSelectSearchCard(ft.Card):
                     ],
                     tight=True,
                     spacing=10,
+                    horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                 ),
             )
         )

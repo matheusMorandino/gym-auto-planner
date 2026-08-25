@@ -3,7 +3,9 @@ import pandas as pd
 import itertools
 import numpy as np
 from typing import List, Dict, Literal, Tuple
+from copy import deepcopy
 
+from pandas.core.ops import invalid, invalid_comparison
 from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatus, LpStatusOptimal, LpAffineExpression
 
 from src.models.data_models import ModelParameters, Exercise, TrainingSolution
@@ -12,25 +14,35 @@ from src.consts.mapping import EXERCISE_DICT, MUSCLES_DICT
 
 class LinearSolver:
     def __init__(self, scenario_params: ModelParameters):
-        self.scenario_params = scenario_params
+        self.scenario_params: ModelParameters = scenario_params
 
-        self.valid_exercises: List[Exercise] = self._get_valid_exercises()
         self.strain_matrix: pd.DataFrame = self._build_strain_matrix()
         self.exercise_cosine_matrix: pd.DataFrame = self._build_cosine_matrix()
 
         self.problem = None
 
-    def _get_valid_exercises(self) -> List[Exercise]:
+    def _get_invalid_exercises(self) -> List[Exercise]:
         """
-        Returns a list of valid exercises based on the scenario parameters
+        Returns a list of invalid exercises based on the scenario parameters.
+        This list is composed of exercises that are not in the valid equipment list, or that are in the exercise blacklist.
+        If an exercise is in the forced exercises list, it will not be considered invalid even if it is in the blacklist or not in the valid equipment list.
         :return:
         """
-        return [
-            exercise
-            for _, exercise
-            in EXERCISE_DICT.items()
-            if exercise.equipment in [equip.name for equip in self.scenario_params.valid_equipments]
-        ]
+        invalid_exercises = []
+
+        for exercise in EXERCISE_DICT.values():
+            checks = []
+
+            checks.append(exercise.equipment not in self.scenario_params.valid_equipments)
+            checks.append(exercise in self.scenario_params.exercise_blacklist)
+
+            if any(checks):
+                invalid_exercises.append(exercise)
+
+        # Remove forced exercises from the invalid exercises list
+        invalid_exercises = [exercise for exercise in invalid_exercises if exercise not in self.scenario_params.forced_exercises]
+
+        return invalid_exercises
 
     def _build_cosine_matrix(self) -> pd.DataFrame:
         """
@@ -39,8 +51,8 @@ class LinearSolver:
         :return:
         """
         cosine_matrix = pd.DataFrame(
-            index=[exercise.name for exercise in self.valid_exercises],
-            columns=[exercise.name for exercise in self.valid_exercises],
+            index=[exercise.name for exercise in EXERCISE_DICT.values()],
+            columns=[exercise.name for exercise in EXERCISE_DICT.values()],
         )
 
         for i, j in itertools.permutations(cosine_matrix.index, 2):
@@ -65,7 +77,7 @@ class LinearSolver:
         """
         strain_matrix = pd.DataFrame(
             index=[muscle.name for muscle in MUSCLES_DICT.values()],
-            columns=[exercise.name for exercise in self.valid_exercises]
+            columns=[exercise.name for exercise in EXERCISE_DICT.values()]
         )
 
         for muscle in strain_matrix.index:
@@ -98,7 +110,7 @@ class LinearSolver:
         self.var_exercise: Dict[str, LpVariable] = {
             exercise.name: LpVariable(f'{exercise.name}_usage', lowBound=0, upBound=1, cat='Binary')
             for exercise
-            in self.valid_exercises
+            in EXERCISE_DICT.values()
         }
 
     def _create_restictions(self):
@@ -134,7 +146,7 @@ class LinearSolver:
             )
 
         # For each pair of used exercises their cosine distance must be larger than the similarity threshold
-        for exercise_i, exercise_j in itertools.combinations(self.valid_exercises, 2):
+        for exercise_i, exercise_j in itertools.combinations(EXERCISE_DICT.values(), 2):
             self.problem += (
                 self.scenario_params.similarity_threshold - (2 - (self.var_exercise[exercise_i.name] + self.var_exercise[exercise_j.name])) * 1000
                 <= self.exercise_cosine_matrix.at[exercise_i.name, exercise_j.name],
@@ -142,7 +154,7 @@ class LinearSolver:
             )
 
         # Force exclusion of exercises listed in the scenario's exercise blacklist
-        for exercise in self.scenario_params.exercise_blacklist:
+        for exercise in self._get_invalid_exercises():
             if exercise.name in self.var_exercise:
                 self.problem += (
                     self.var_exercise[exercise.name] == 0,
@@ -157,16 +169,6 @@ class LinearSolver:
                     f'{exercise.name}_forced_restriction'
                 )
 
-    def _create_objective_restriction(self, exclude_solution: int):
-        """
-        Creates a restriction for the objective function to avoid getting the same solution multiple times during multiple solutions runs.
-        :param exclude_solution: Value to exclude from the solution as a restriction.
-        """
-        self.problem += (
-            self._create_objective_function() >= exclude_solution + 1,
-            'exclude_previous_solution_restriction'
-        )
-
     def _create_objective_function(self) -> LpAffineExpression:
         """
         Creates the objective function for the linear solver.
@@ -175,24 +177,20 @@ class LinearSolver:
         # minimize the total number of exercises done
         total_obj_function = lpSum(
             self.var_exercise[exercise.name]
-            for exercise in self.valid_exercises
+            for exercise in EXERCISE_DICT.values()
         )
 
         return total_obj_function
 
-    def solve_single(self, exclude_solution: int = None) -> TrainingSolution:
+    def solve_single(self, scenario_params: ModelParameters) -> TrainingSolution:
         """
         Runs the linear solver for a single solution.
-        :param exclude_solution: Value to exclude from the solution as a restriction. This is used to avoid getting the same solution multiple times during multiple solutions runs.
         """
         # Defining problem
         self.problem = LpProblem("Training_Optimization", LpMinimize)
 
         self._create_variables()
         self._create_restictions()
-
-        if exclude_solution is not None:
-            self._create_objective_restriction(exclude_solution)
 
         self.problem += self._create_objective_function()
 
@@ -201,6 +199,7 @@ class LinearSolver:
 
         # Create solution object
         solution = TrainingSolution(
+            scenario_params=deepcopy(scenario_params),
             solution_status=LpStatus[self.problem.status],
             objective_value=self.problem.objective.value(),
             exercise_list=[]
@@ -224,13 +223,19 @@ class LinearSolver:
         :param n_solutions: Number of solutions to generate.
         """
         solutions = []
-        exclude_solution = None
 
         for _ in range(n_solutions):
-            solution = self.solve_single(exclude_solution=exclude_solution)
-            if solution.solution_status == 'Optimal':
+            solution = self.solve_single(scenario_params=self.scenario_params)
+
+            # Pick a percentage of exercises from the previous solution to be excluded in the next solution.
+            # This is to ensure that the next solution is different from the previous one.
+            p = self.scenario_params.iteration_novelty_threshold
+            if solution.solution_status == 'Optimal' and len(solution.exercise_list) > 0:
+                num_exercises_to_exclude = max(1, int(len(solution.exercise_list) * p))
+                exercises_to_exclude = np.random.choice(solution.exercise_list, size=num_exercises_to_exclude, replace=False)
+                self.scenario_params.exercise_blacklist.extend(exercises_to_exclude)
+
                 solutions.append(solution)
-                exclude_solution = len(solution.exercise_list)
             else:
                 break
 

@@ -26,7 +26,7 @@ class ScenarioHandler:
         self.training_target = training_target
         self.overtraining_delta = overtraining_delta
         self.group_list = [MUSCLE_GROUPS[group] for group in group_list]
-        self.valid_equipments = [EQUIPMENT_DICT[equip] for equip in valid_equipments]
+        self.valid_equipments = valid_equipments
         self.exercise_blacklist = [EXERCISE_DICT[exercise] for exercise in exercise_blacklist]
         self.forced_exercises = [EXERCISE_DICT[exercise] for exercise in forced_exercises]
 

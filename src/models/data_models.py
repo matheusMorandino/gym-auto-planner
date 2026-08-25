@@ -43,9 +43,11 @@ class ModelParameters:
     similarity_threshold: float = field(default=0)
     target_groups: List[MuscleGroup] = field(default_factory=list)
     targeted_muscles: List[Muscle] = field(default_factory=list)
-    valid_equipments: List[Equipment] = field(default_factory=list)
+
+    valid_equipments: List[str] = field(default_factory=list)
     exercise_blacklist: List[Exercise] = field(default_factory=list)
     forced_exercises: List[Exercise] = field(default_factory=list)
+    iteration_novelty_threshold: float = field(default=0.5)
 
     # strain groups scores
     primary_score: float = field(default=1)
@@ -61,6 +63,7 @@ class ModelParameters:
 
 @dataclass
 class TrainingSolution:
+    scenario_params: ModelParameters = field(default_factory=ModelParameters)
     solution_status: str = field(default='')
     objective_value: float = field(default=0)
 

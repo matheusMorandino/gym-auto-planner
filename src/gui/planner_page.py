@@ -31,7 +31,7 @@ class PlannerPage:
             title=self.scenario_params.valid_equipments.title,
             description=self.scenario_params.valid_equipments.description,
             options=self.scenario_params.valid_equipments.options,
-            on_value_change=lambda value: setattr(self.scenario_params, "valid_equipments", value),
+            on_value_change=lambda value: setattr(self.scenario_params.valid_equipments, "value", value),
             expand=True,
         )
 
@@ -40,7 +40,7 @@ class PlannerPage:
             title=self.scenario_params.target_muscle_groups.title,
             description=self.scenario_params.target_muscle_groups.description,
             options=self.scenario_params.target_muscle_groups.options,
-            on_value_change=lambda value: setattr(self.scenario_params, "target_muscle_groups", value),
+            on_value_change=lambda value: setattr(self.scenario_params.target_muscle_groups, "value", value),
             expand=True,
         )
 
@@ -49,7 +49,7 @@ class PlannerPage:
             title=self.scenario_params.excluded_exercises.title,
             description=self.scenario_params.excluded_exercises.description,
             options=self.scenario_params.excluded_exercises.options,
-            on_value_change=lambda value: setattr(self.scenario_params, "excluded_exercises", value),
+            on_value_change=lambda value: setattr(self.scenario_params.excluded_exercises, "value", value),
             expand=True,
         )
 
@@ -58,7 +58,7 @@ class PlannerPage:
             title=self.scenario_params.forced_exercises.title,
             description=self.scenario_params.forced_exercises.description,
             options=self.scenario_params.forced_exercises.options,
-            on_value_change=lambda value: setattr(self.scenario_params, "forced_exercises", value),
+            on_value_change=lambda value: setattr(self.scenario_params.forced_exercises, "value", value),
             expand=True,
         )
 
@@ -102,10 +102,8 @@ class PlannerPage:
         page.title = "Exercise auto planner"
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
-        excluded_card = self.build_excluded_exercises_card()
-        forced_exercises_card = self.build_forced_exercises_card()
-
         page.add(
+            # Scenario parameters
             ft.Row(
                 [
                     self.build_param_slider("training_target"),
@@ -125,8 +123,8 @@ class PlannerPage:
             ),
             ft.Row(
                 [
-                    excluded_card,
-                    forced_exercises_card
+                    self.build_excluded_exercises_card(),
+                    self.build_forced_exercises_card()
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 expand=True,
@@ -137,5 +135,11 @@ class PlannerPage:
                     self.build_run_solution_button()
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
-            )
+            ),
+
+            # Divisor between the parameter sliders and the equipment/muscle/exercise cards
+            ft.Divider(height=1, thickness=1, color=ft.Colors.GREY_400, opacity=0.5),
+
+            # Results section
+
         )

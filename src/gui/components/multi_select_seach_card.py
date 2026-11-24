@@ -30,7 +30,10 @@ class MultiSelectSearchCard(ft.Card):
             enable_filter=True,
         )
 
-        self.chips = ft.Row([], wrap=True)
+        self.chips = ft.Row(
+            [],
+            scroll=ft.Scrollbar(thumb_visibility=True, thickness=6, interactive=True),
+        )
 
         super().__init__(
             expand=expand,
@@ -43,7 +46,7 @@ class MultiSelectSearchCard(ft.Card):
                         ft.Text(title, size=16, weight=ft.FontWeight.BOLD),
                         ft.Text(description, size=12, color=ft.Colors.GREY_700),
                         self.dropdown,
-                        self.chips
+                        self.chips,
                     ],
                     tight=True,
                     spacing=10,
@@ -63,12 +66,14 @@ class MultiSelectSearchCard(ft.Card):
             if self.items is None:
                 self.items = [val]
             elif not val in self.items:
-                self.items.append(val)
+                self.items.insert(0, val)
 
             # Update chips
-            self.chips.controls.append(
+            self.chips.controls.insert(
+                0,
                 ft.Chip(
                     label=val,
+                    margin=ft.Margin(bottom=12),
                     on_delete=lambda e, value=val: self._remove_item(e, value)
                 )
             )
